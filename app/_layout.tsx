@@ -9,15 +9,34 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { PaperProvider } from "react-native-paper";
 
+import { useAuthContext } from "@/hooks/use-auth-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { AuthProvider } from "@/lib/auth-context";
-import App from "./app";
+import AuthProvider from "@/providers/auth-provider";
+import { Stack } from "expo-router";
 
 export const unstable_settings = {
   anchor: "(tabs)",
 };
 
 const queryClient = new QueryClient();
+
+function RootNavigator() {
+  const { isLoggedIn, session } = useAuthContext();
+
+  console.log(isLoggedIn);
+  console.log(session);
+
+  return (
+    <Stack>
+      <Stack.Protected guard={isLoggedIn}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack.Protected>
+      <Stack.Protected guard={!isLoggedIn}>
+        <Stack.Screen name="welcome" options={{ headerShown: false }} />
+      </Stack.Protected>
+    </Stack>
+  );
+}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -29,7 +48,7 @@ export default function RootLayout() {
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
           <PaperProvider>
-            <App />
+            <RootNavigator />
           </PaperProvider>
         </ThemeProvider>
       </AuthProvider>

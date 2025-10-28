@@ -1,5 +1,6 @@
 import { Platform, StyleSheet, View } from "react-native";
 
+import SignOutButton from "@/components/social-auth-buttons/sign-out-button";
 import { Link } from "expo-router";
 import { Text } from "react-native-paper";
 
@@ -64,6 +65,7 @@ export default function HomeScreen() {
           <Text>app-example</Text>.
         </Text>
       </View>
+      <SignOutButton />
     </View>
   );
 }
