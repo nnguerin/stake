@@ -42,9 +42,7 @@
       [
         "expo-font",
         {
-          "fonts": [
-            "./assets/fonts/Montserrat-Black.ttf"
-          ]
+          "fonts": ["./assets/fonts/Montserrat-Black.ttf"]
         }
       ],
       "expo-secure-store"

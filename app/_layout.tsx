@@ -23,8 +23,8 @@ const queryClient = new QueryClient();
 function RootNavigator() {
   const { isLoggedIn, session } = useAuthContext();
 
-  console.log(isLoggedIn);
-  console.log(session);
+  console.log("isLoggedIn:", isLoggedIn);
+  console.log("session:", session);
 
   return (
     <Stack>

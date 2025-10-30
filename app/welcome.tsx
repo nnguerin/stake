@@ -1,9 +1,10 @@
+import SignUpButton from "@/components/authentication-buttons/SignUpButton";
 import { applicationName } from "@/constants/system";
-import { supabase } from "@/lib/supabase";
+import { useAuthContext } from "@/hooks/use-auth-context";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Button, Modal, Text, TextInput } from "react-native-paper";
 import Swiper from "react-native-swiper";
 
@@ -12,23 +13,7 @@ const Welcome = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  async function signUpWithEmail() {
-    setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
-
-    if (error) Alert.alert(error.message);
-    if (!session)
-      Alert.alert("Please check your inbox for email verification!");
-    setLoading(false);
-  }
+  const { signIn } = useAuthContext();
 
   return (
     <View style={styles.container}>
@@ -48,6 +33,14 @@ const Welcome = () => {
             <Text style={styles.text}>
               Stay connected to the people who matter most
             </Text>
+            {__DEV__ && (
+              <Button
+                onPress={() => signIn("nnguerin@gmail.com", "Panda581")}
+                buttonColor="black"
+              >
+                Sign in as Test User
+              </Button>
+            )}
           </View>
           <View style={styles.slide}>
             <View style={styles.slideHeader}></View>
@@ -103,17 +96,7 @@ const Welcome = () => {
           onChangeText={setConfirmPassword}
           secureTextEntry
         />
-        <Button
-          mode="contained"
-          onPress={signUpWithEmail}
-          textColor="#F4EFE7"
-          buttonColor="#2C2C2C"
-          disabled={
-            !email || !password || password !== confirmPassword || loading
-          }
-        >
-          Sign Up
-        </Button>
+        <SignUpButton email={email} password={password} />
       </Modal>
     </View>
   );

@@ -2,6 +2,7 @@ import { AuthContext } from "@/hooks/use-auth-context";
 import { supabase } from "@/lib/supabase";
 import type { Session } from "@supabase/supabase-js";
 import { PropsWithChildren, useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 export default function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | undefined | null>();
@@ -21,7 +22,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
       if (error) {
         console.error("Error fetching session:", error);
       }
-
       setSession(session);
       setIsLoading(false);
     };
@@ -31,7 +31,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("Auth state changed:", { event: _event, session });
       setSession(session);
     });
 
@@ -64,6 +63,36 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     fetchProfile();
   }, [session]);
 
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) throw error;
+  };
+
+  const signUp = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: "stake://auth/callback",
+      },
+    });
+    if (error) throw error;
+
+    Alert.alert(
+      "Check your email",
+      "We sent you a confirmation link. Click it to complete signup and sign in."
+    );
+  };
+
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -71,6 +100,9 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         isLoading,
         profile,
         isLoggedIn: session != undefined,
+        signIn,
+        signUp,
+        signOut,
       }}
     >
       {children}
